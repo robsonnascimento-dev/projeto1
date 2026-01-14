@@ -1,79 +1,106 @@
-Cores_triagem_tupla = ('VERMELHO', 'AMARELO', 'VERDE', 'AZUL')
-name_cadastrados = set()
+# ==========================
+# SISTEMA DE TRIAGEM INTELIGENTE (S.T.I.)
+
+CORES_TRIAGEM = ('VERMELHO', 'AMARELO', 'VERDE', 'AZUL')
+
+
 cpfs_cadastrados = set()
+
+
 fila_atendimento = []
+
+
+def calcular_pontuacao(gravidade, tempo):
+    return (gravidade * 10) + tempo
+
+
+def definir_cor(gravidade):
+    if gravidade >= 8:
+        return CORES_TRIAGEM[0]  # VERMELHO
+    elif gravidade >= 5:
+        return CORES_TRIAGEM[1]  # AMARELO
+    elif gravidade >= 3:
+        return CORES_TRIAGEM[2]  # VERDE
+    else:
+        return CORES_TRIAGEM[3]  # AZUL
+
+
+def cadastrar_paciente():
+    cpf = input("CPF do paciente: ").strip()
+
+    if cpf in cpfs_cadastrados:
+        print("❌ ERRO: CPF já cadastrado!\n")
+        return
+
+    nome = input("Nome do paciente: ").strip()
+
+    try:
+        gravidade = int(input("Gravidade (1 a 10): "))
+        tempo = int(input("Tempo de espera (minutos): "))
+
+        if not (1 <= gravidade <= 10):
+            print("❌ Gravidade inválida!\n")
+            return
+
+    except ValueError:
+        print("❌ Entrada inválida!\n")
+        return
+
+    pontuacao = calcular_pontuacao(gravidade, tempo)
+    cor = definir_cor(gravidade)
+
+    paciente = {
+        "nome": nome,
+        "cpf": cpf,
+        "gravidade": gravidade,
+        "tempo_espera": tempo,
+        "pontuacao": pontuacao,
+        "cor": cor
+    }
+
+    fila_atendimento.append(paciente)
+    cpfs_cadastrados.add(cpf)
+
+    print(f"✅ Paciente cadastrado | Cor: {cor} | Pontuação: {pontuacao}\n")
+
+
+def exibir_fila():
+    if not fila_atendimento:
+        print("📭 Fila vazia.\n")
+        return
+
+    fila_ordenada = sorted(
+        fila_atendimento,
+        key=lambda p: p["pontuacao"],
+        reverse=True
+    )
+
+    print("\n📋 FILA DE ATENDIMENTO (POR PRIORIDADE)")
+    print("-" * 50)
+
+    for i, p in enumerate(fila_ordenada, start=1):
+        print(
+            f"{i}º | {p['nome']} | CPF: {p['cpf']} | "
+            f"Cor: {p['cor']} | Pontuação: {p['pontuacao']}"
+        )
+
+    print("-" * 50 + "\n")
+
+
 while True:
-    print("\n seja bem vindo a UPA Infinity. \n - digite 1 para cadastrar novo paciente. \n - digite 2 para ver fila de espera. \n - digite 3 para sair.")
-    resposta = input("digite sua resposta: ")
-    if resposta == '1':
-        while True:
-            try:
-                name = input("digite seu nome: ")
-                if name in name_cadastrados:
-                    print("Nome ja digitado")
-                break
-            except ValueError:
-                print("Já existem pacientes com esse nome.")
+    print("🏥 SISTEMA DE TRIAGEM INTELIGENTE")
+    print("1 - Cadastrar paciente")
+    print("2 - Exibir fila de atendimento")
+    print("3 - Sair")
 
-        while True:
-            try:
-                idade = int(input("digite sua idade: "))
-                break
-            except ValueError:
-                print("Por favor, digite apenas números.")
-        while True:
-            try:
-                cpf = int(input("digite seu cpf: "))
-                break
-            except ValueError:
-                print("Por favor, digite apenas números.")
-            if cpf in cpfs_cadastrados:
-                print("CPF já cadastrado! Paciente duplicado.")
-                continue
-            else:
-                cpfs_cadastrados.add(cpf)
-        while True:
-            try:
-                Gravidade = int(input("digite sua gravidade de 1 a 10: "))
-                if 1 <= Gravidade <= 10:
-                    break
-                else:
-                    print("a gravidade precisa estar de 1 a 10")
-            except ValueError:
-                print("Por favor, digite apenas números.")
-        while True:
-            try:
-                tempo_espera = int(
-                    input("digite seu tempo de espera (EM MINUTOS): "))
-                break
-            except ValueError:
-                print("digite apenas números")
+    opcao = input("Escolha uma opção: ").strip()
 
-        pontuaçao = (Gravidade * 10) + tempo_espera
-        paciente = {'nome': name,
-                    'cpf': cpf,
-                    'gravidade': Gravidade,
-                    'tempo_espera': tempo_espera,
-                    'pontuaçao': pontuaçao}
-
-    elif resposta == "2":
-        if not fila_atendimento:
-            print("fila de atendimento vazia ")
-        else:
-            fila_ordenada = sorted(
-                fila_atendimento, key=lambda
-                p: p["pontuação"], reverse=True)
-            print(" \n FILA DE ATENDIMENTO (POR PRIORIDADE)")
-            for i, p in enumerate(fila_ordenada, start=1):
-                print(
-                    f"{i}º - {p['nome']} | CPF: {p['cpf']} | "
-                    f"Gravidade: {p['gravidade']} | "
-                    f"Espera: {p['tempo_espera']} min | "
-                    f"Pontuação: {p['pontuacao']}"
-                )
-
-    elif resposta == '3':
-        print("encerrando sistema. . . .")
+    if opcao == "1":
+        cadastrar_paciente()
+    elif opcao == "2":
+        exibir_fila()
+    elif opcao == "3":
+        print("👋 Sistema encerrado.")
         break
     else:
-        print("opção inválida. Tente novamente.")
+        print("❌ Opção inválida!\n")
