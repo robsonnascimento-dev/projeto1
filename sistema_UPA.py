@@ -1,4 +1,3 @@
-# ==========================
 # SISTEMA DE TRIAGEM INTELIGENTE (S.T.I.)
 
 CORES_TRIAGEM = ('VERMELHO', 'AMARELO', 'VERDE', 'AZUL')
